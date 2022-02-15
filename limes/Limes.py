@@ -228,7 +228,11 @@ class Limes:
 
     def get_array_expression(self, array, attribute_name):
         if len(array) > 0:
-            return '"' + attribute_name + '"' + ' in ' + str(tuple(i for i in array))
+            result = '"' + attribute_name + '"' + ' in ' + str(tuple(i for i in array))
+            #QgsMessageLog.logMessage(str(result), level=Qgis.Info) 
+            result = result.replace("',)", "')")
+            #QgsMessageLog.logMessage(str(result), level=Qgis.Info)
+            return result
         else:
             return '"' + attribute_name + '" is not null'
     

@@ -91,7 +91,7 @@
     <string/>
    </property>
    <property name="currentText">
-    <string>Provinz</string>
+    <string>Provincz</string>
    </property>
    <property name="defaultText">
     <string>Provinces</string>
@@ -255,7 +255,7 @@
     <string>Umwehrung</string>
    </property>
    <property name="defaultText">
-    <string>Provinces</string>
+    <string>Umwehrung</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_7">
