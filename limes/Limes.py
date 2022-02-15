@@ -190,7 +190,7 @@ class Limes:
 
     def download_layer(self):
         try:
-            self.downloaded_layer = processing.run("native:filedownloader", {'URL':'http://89.185.227.230/scripts/archeological_sites.geojson','OUTPUT':'TEMPORARY_OUTPUT'})['OUTPUT']
+            self.downloaded_layer = processing.run("native:filedownloader", {'URL':'https://github.com/WencelFrohlich/limes/blob/main/archeological_sites.geojson','OUTPUT':'TEMPORARY_OUTPUT'})['OUTPUT']
             self.iface.messageBar().pushMessage("LIMES", "Layer of archeological sites was succesfully loaded in memory!", level=Qgis.Info, duration=3)
         except:
             sys.exit()
