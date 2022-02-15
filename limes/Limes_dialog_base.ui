@@ -91,10 +91,10 @@
     <string/>
    </property>
    <property name="currentText">
-    <string>Provincz</string>
+    <string>Provinz</string>
    </property>
    <property name="defaultText">
-    <string>Provinces</string>
+    <string>Provinz</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">
