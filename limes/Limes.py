@@ -214,7 +214,7 @@ class Limes:
         'DATASOURCE_OPTIONS':'',
         'LAYER_OPTIONS':''}
         )
-        result_layer = QgsVectorLayer(self.result['OUTPUT'], "vysledek vyberu","ogr")
+        result_layer = QgsVectorLayer(self.result['OUTPUT'], "filtered_sites","ogr")
         QgsProject.instance().addMapLayer(result_layer)
         QgsMessageLog.logMessage('Limes: {0}'.format(str("Data was added successfully")), level=Qgis.Info)
 
@@ -238,7 +238,7 @@ class Limes:
     
     def get_text_expression(self, text, attribute_name):
         if text != '':
-            return '"' + attribute_name + '" = ' + "'" +  str(text) + "'"
+            return 'lower("' + attribute_name + '") = ' + "'" +  str(text).lower() + "'"
         else:
             return '"' + attribute_name + '" is not null' 
 
@@ -311,7 +311,7 @@ class Limes:
         self.dlg.spinBoxEndeMax.valueChanged.connect(lambda: self.create_expression())#spinBoxAnfang_Min
         self.dlg.mLineEditBesatzung.valueChanged.connect(lambda: self.create_expression())
         self.dlg.mLineEditBesatzung_Einheit.valueChanged.connect(lambda: self.create_expression())
-
+        
     def run(self):
         """Run method that performs all the real work"""
 
