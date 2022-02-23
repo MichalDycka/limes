@@ -200,10 +200,10 @@ class Limes:
         #QgsProject.instance().addMapLayer(self.layer)
 
     def filter_features(self):
-        QgsMessageLog.logMessage(str(self.dlg.expressionField.isValidExpression()))
+        #QgsMessageLog.logMessage(str(self.dlg.expressionField.isValidExpression()))
         if self.dlg.expressionField.isValidExpression():
             self.layer.selectByExpression(self.dlg.expressionField.asExpression()) 
-            self.dlg.textBrowser.setText(str(len(self.layer.selectedFeatures())))
+            self.dlg.textBrowser.setText(str(len(self.layer.selectedFeatures())) + ' sites')
 
     def save_result(self):
         QgsProject.instance().addMapLayer(self.layer)
@@ -223,7 +223,8 @@ class Limes:
         unique_values.append(None)
         index = self.layer.fields().indexOf(attribute_name)
         for value in self.layer.uniqueValues(index):
-            unique_values.append(value)
+            if value:
+                unique_values.append(value)
         return unique_values
 
     def get_array_expression(self, array, attribute_name):
@@ -246,12 +247,61 @@ class Limes:
         if number == 0 or str(number) == '0':
             return '"' + attribute_name + '" is not null' 
         else:
-            return '"' + attribute_name + '" = ' +  str(number)
+            return '"' + attribute_name + '" ' + str(self.get_operator(attribute_name)) + ' ' +  str(number)
+
+    # def add_prefix(self, input, text):
+    #     input.setPrefix(text)
+
+    # def addYearSuffix(self, number_input):
+    #     if number_input.value() > 0:
+    #         number_input.setSuffix(' A.C.')
+    #     elif number_input.value() < 0:
+    #         number_input.setSuffix(' B.C.')
+
+    def get_operator(self, attribute_name):
+        if attribute_name == 'Anfang_Min':
+            if self.dlg.radioButtonAnfangMinLessOrEqual.isChecked():
+                return '<='
+            elif self.dlg.radioButtonAnfangMinMoreOrEqual.isChecked():
+                return '>='
+            elif self.dlg.radioButtonAnfangMinNotEqual.isChecked():
+                return '!='
+            elif self.dlg.radioButtonAnfangMinEqual.isChecked():
+                return '='
+        elif attribute_name == 'Anfang_Max':
+            if self.dlg.radioButtonAnfangMaxLessOrEqual.isChecked():
+                return '<='
+            elif self.dlg.radioButtonAnfangMaxMoreOrEqual.isChecked():
+                return '>='
+            elif self.dlg.radioButtonAnfangMaxNotEqual.isChecked():
+                return '!='
+            elif self.dlg.radioButtonAnfangMaxEqual.isChecked():
+                return '='
+        elif attribute_name == 'Ende_Min':
+            if self.dlg.radioButtonEndeMinLessOrEqual.isChecked():
+                return '<='
+            elif self.dlg.radioButtonEndeMinMoreOrEqual.isChecked():
+                return '>='
+            elif self.dlg.radioButtonEndeMinNotEqual.isChecked():
+                return '!='
+            elif self.dlg.radioButtonEndeMinEqual.isChecked():
+                return '='
+        elif attribute_name == 'Ende_Max':
+            if self.dlg.radioButtonEndeMaxLessOrEqual.isChecked():
+                return '<='
+            elif self.dlg.radioButtonEndeMaxMoreOrEqual.isChecked():
+                return '>='
+            elif self.dlg.radioButtonEndeMaxNotEqual.isChecked():
+                return '!='
+            elif self.dlg.radioButtonEndeMaxEqual.isChecked():
+                return '='
+        else:
+            return '='
+
     
     def clean_expression(self):
         result = []
         conditions = str(self.expression).split('AND')
-        #QgsMessageLog.logMessage(str(conditions), level=Qgis.Info) 
         for condition in conditions:
             if 'is not null' not in condition:
                 result.append(condition) 
@@ -259,31 +309,29 @@ class Limes:
 
     def create_expression(self):
         self.expression = ''        
-        self.expression = "{0} AND {1} AND {2} AND {3} AND {4} AND {5} AND {6} AND {7} AND {8} AND {9} AND {10} AND {11} AND {12} AND {13} AND {14} AND {15} AND {16} AND {17} AND {18} AND {19}".format(
+        #self.expression = "{0} AND {1} AND {2} AND {3} AND {4} AND {5} AND {6} AND {7} AND {8} AND {9} AND {10} AND {11} AND {12} AND {13} AND {14} AND {15} AND {16} AND {17} AND {18} AND {19}".format(
+        self.expression = "{0} AND {1} AND {2} AND {3} AND {4} AND {5} AND {6} AND {7} AND {8} AND {9} AND {10} AND {11} AND {12} AND {13} AND {14} AND {15} AND {16}".format(
             self.get_text_expression(self.dlg.mLineEditOrt.value(), 'Ort'),
             self.get_array_expression(self.dlg.comboxBoxProvinz.checkedItems(), 'Provinz'),
             self.get_text_expression(self.dlg.mLineEditAntiker_Name.value(), 'Antiker_Name'),
             self.get_number_expression(self.dlg.spinBoxGrosseInHektar.value(), 'Grosse_in_Hektar'),
-            self.get_number_expression(self.dlg.spinBoxGrosseInMeter.value(), 'Grosse_in_m2'),
             self.get_array_expression(self.dlg.comboxBoxUmwehrung.checkedItems(), 'Umwehrung'),
-            self.get_text_expression(self.dlg.comboBoxAnnex.currentText(), 'Annex'),
+            self.get_array_expression(self.dlg.comboBoxAnnex.checkedItems(), 'Annex'),
             self.get_number_expression(self.dlg.spinBoxAnnexInHektar.value(), 'Annex_in_Hektar'),
-            self.get_number_expression(self.dlg.spinBoxAnnexInM2.value(), 'Annex_in_m2_'),
-            self.get_text_expression(self.dlg.comboBoxLimes.currentText(), 'Limes'),
+            self.get_array_expression(self.dlg.comboBoxLimes.checkedItems(), 'Limes'),
             self.get_text_expression(self.dlg.mLineEditKlassifikation.value(), 'Klassifikation'),
-            self.get_text_expression(self.dlg.comboBoxObjekt.currentText(), 'Objekt'),
-            self.get_number_expression(self.dlg.spinBoxAnfang_Genauigkeit.value(), 'Anfang_Genauigkeit'),
+            self.get_array_expression(self.dlg.comboBoxObjekt.checkedItems(), 'Objekt'),
+            self.get_array_expression(self.dlg.comboBoxAnfang_Genauigkeit.checkedItems(), 'Anfang_Genauigkeit_text'),
             self.get_number_expression(self.dlg.spinBoxAnfang_Min.value(), 'Anfang_Min'),
             self.get_number_expression(self.dlg.spinBoxAnfang_Max.value(), 'Anfang_Max'),
-            self.get_number_expression(self.dlg.spinBoxEnde_Genauigkeit.value(), 'Ende_Genauigkeit'),
+            self.get_array_expression(self.dlg.comboBoxEnde_Genauigkeit.checkedItems(), 'Ende_Genauigkeit_text'),
             self.get_number_expression(self.dlg.spinBoxEndeMin.value(), 'Ende_Min'),
             self.get_number_expression(self.dlg.spinBoxEndeMax.value(), 'Ende_Max'),
-            self.get_text_expression(self.dlg.mLineEditBesatzung.value(), 'Besatzung'),
+            self.get_array_expression(self.dlg.comboBoxBesatzung.checkedItems(), 'Besatzung'),
             self.get_text_expression(self.dlg.mLineEditBesatzung_Einheit.value(), 'Besatzung_Einheit'),
         )
         #QgsMessageLog.logMessage(str(self.expression))
         self.dlg.expressionField.setExpression(self.clean_expression())
-
 
     def init_inputs(self, dialog):
         self.dlg.comboxBoxProvinz.addItems(self.get_unique_values('Provinz'))
@@ -291,25 +339,26 @@ class Limes:
         self.dlg.mLineEditOrt.valueChanged.connect(lambda: self.create_expression())
         self.dlg.mLineEditAntiker_Name.valueChanged.connect(lambda: self.create_expression())
         self.dlg.spinBoxGrosseInHektar.valueChanged.connect(lambda: self.create_expression())
-        self.dlg.spinBoxGrosseInMeter.valueChanged.connect(lambda: self.create_expression())
         self.dlg.comboxBoxUmwehrung.addItems(self.get_unique_values('Umwehrung'))
         self.dlg.comboxBoxUmwehrung.checkedItemsChanged.connect(lambda: self.create_expression())
         self.dlg.comboBoxAnnex.addItems(self.get_unique_values('Annex'))
-        self.dlg.comboBoxAnnex.currentIndexChanged.connect(lambda: self.create_expression())
+        self.dlg.comboBoxAnnex.checkedItemsChanged.connect(lambda: self.create_expression())
         self.dlg.spinBoxAnnexInHektar.valueChanged.connect(lambda: self.create_expression())
-        self.dlg.spinBoxAnnexInM2.valueChanged.connect(lambda: self.create_expression())
         self.dlg.comboBoxLimes.addItems(self.get_unique_values('Limes'))
-        self.dlg.comboBoxLimes.currentIndexChanged.connect(lambda: self.create_expression())
+        self.dlg.comboBoxLimes.checkedItemsChanged.connect(lambda: self.create_expression())
         self.dlg.mLineEditKlassifikation.valueChanged.connect(lambda: self.create_expression())
         self.dlg.comboBoxObjekt.addItems(self.get_unique_values('Objekt'))
-        self.dlg.comboBoxObjekt.currentIndexChanged.connect(lambda: self.create_expression())
-        self.dlg.spinBoxAnfang_Genauigkeit.valueChanged.connect(lambda: self.create_expression())#spinBoxAnfang_Min
-        self.dlg.spinBoxAnfang_Min.valueChanged.connect(lambda: self.create_expression())#spinBoxAnfang_Min
-        self.dlg.spinBoxAnfang_Max.valueChanged.connect(lambda: self.create_expression())#spinBoxAnfang_Min
-        self.dlg.spinBoxEnde_Genauigkeit.valueChanged.connect(lambda: self.create_expression())#spinBoxAnfang_Min
+        self.dlg.comboBoxObjekt.checkedItemsChanged.connect(lambda: self.create_expression())
+        self.dlg.comboBoxAnfang_Genauigkeit.addItems(self.get_unique_values('Anfang_Genauigkeit_text'))
+        self.dlg.comboBoxAnfang_Genauigkeit.checkedItemsChanged.connect(lambda: self.create_expression())
+        self.dlg.spinBoxAnfang_Min.valueChanged.connect(lambda: self.create_expression())
+        self.dlg.spinBoxAnfang_Max.valueChanged.connect(lambda: self.create_expression())
+        self.dlg.comboBoxEnde_Genauigkeit.addItems(self.get_unique_values('Ende_Genauigkeit_text'))
+        self.dlg.comboBoxEnde_Genauigkeit.checkedItemsChanged.connect(lambda: self.create_expression())#spinBoxAnfang_Min
         self.dlg.spinBoxEndeMin.valueChanged.connect(lambda: self.create_expression())#spinBoxAnfang_Min
         self.dlg.spinBoxEndeMax.valueChanged.connect(lambda: self.create_expression())#spinBoxAnfang_Min
-        self.dlg.mLineEditBesatzung.valueChanged.connect(lambda: self.create_expression())
+        self.dlg.comboBoxBesatzung.addItems(self.get_unique_values('Besatzung'))
+        self.dlg.comboBoxBesatzung.checkedItemsChanged.connect(lambda: self.create_expression())
         self.dlg.mLineEditBesatzung_Einheit.valueChanged.connect(lambda: self.create_expression())
         
     def run(self):
