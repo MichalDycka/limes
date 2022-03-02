@@ -239,7 +239,8 @@ class Limes:
     
     def get_text_expression(self, text, attribute_name):
         if text != '':
-            return 'lower("' + attribute_name + '") = ' + "'" +  str(text).lower() + "'"
+            #return 'lower("' + attribute_name + '") = ' + "'" +  str(text).lower() + "'"
+            return '"' + attribute_name + '" ilike ' + "'%" +  str(text).lower() + "%'"
         else:
             return '"' + attribute_name + '" is not null' 
 
