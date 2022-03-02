@@ -109,11 +109,11 @@
     <enum>QTabWidget::Rounded</enum>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="base">
     <attribute name="title">
-     <string>Base</string>
+     <string>Grundsuche</string>
     </attribute>
     <attribute name="toolTip">
      <string>Base filter inputs</string>
@@ -220,7 +220,7 @@
    </widget>
    <widget class="QWidget" name="advanced">
     <attribute name="title">
-     <string>Advanced</string>
+     <string>Erweiterte</string>
     </attribute>
     <attribute name="toolTip">
      <string>Advance filter inputs</string>
@@ -525,7 +525,7 @@
    </widget>
    <widget class="QWidget" name="time">
     <attribute name="title">
-     <string>Time</string>
+     <string>Datierung</string>
     </attribute>
     <widget class="QGroupBox" name="groupBox_12">
      <property name="geometry">
