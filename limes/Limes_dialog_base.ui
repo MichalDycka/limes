@@ -20,7 +20,7 @@
    <string>LIMES</string>
   </property>
   <property name="toolTip">
-   <string>Ort values</string>
+   <string/>
   </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>
@@ -109,7 +109,7 @@
     <enum>QTabWidget::Rounded</enum>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="base">
     <attribute name="title">
@@ -285,25 +285,6 @@
       <string notr="true"/>
      </property>
     </widget>
-    <widget class="QSpinBox" name="spinBoxGrosseInHektar">
-     <property name="geometry">
-      <rect>
-       <x>60</x>
-       <y>70</y>
-       <width>121</width>
-       <height>26</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>Size in hectares</string>
-     </property>
-     <property name="suffix">
-      <string> ha</string>
-     </property>
-     <property name="maximum">
-      <number>999999999</number>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_7">
      <property name="geometry">
       <rect>
@@ -390,7 +371,7 @@
       <string notr="true"/>
      </property>
     </widget>
-    <widget class="QSpinBox" name="spinBoxAnnexInHektar">
+    <widget class="QDoubleSpinBox" name="doubleSpinBoxAnnexInHektar">
      <property name="geometry">
       <rect>
        <x>269</x>
@@ -405,8 +386,14 @@
      <property name="suffix">
       <string> ha</string>
      </property>
+     <property name="decimals">
+      <number>3</number>
+     </property>
      <property name="maximum">
-      <number>999999999</number>
+      <double>999999.989999999990687</double>
+     </property>
+     <property name="singleStep">
+      <double>0.100000000000000</double>
      </property>
     </widget>
     <widget class="QLabel" name="label_4">
@@ -545,6 +532,31 @@
      </property>
      <property name="toolTip">
       <string>Garrison (type of unit)</string>
+     </property>
+    </widget>
+    <widget class="QgsDoubleSpinBox" name="spinBoxGrosseInHektar">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>70</y>
+       <width>121</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Size in hectares</string>
+     </property>
+     <property name="suffix">
+      <string> ha</string>
+     </property>
+     <property name="decimals">
+      <number>3</number>
+     </property>
+     <property name="maximum">
+      <double>999999.989999999990687</double>
+     </property>
+     <property name="singleStep">
+      <double>0.100000000000000</double>
      </property>
     </widget>
    </widget>
@@ -1866,6 +1878,11 @@
    <class>QgsCheckableComboBox</class>
    <extends>QComboBox</extends>
    <header>qgscheckablecombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QgsDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>qgsdoublespinbox.h</header>
   </customwidget>
   <customwidget>
    <class>QgsFieldExpressionWidget</class>
