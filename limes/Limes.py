@@ -215,6 +215,7 @@ class Limes:
         'LAYER_OPTIONS':''}
         )
         result_layer = QgsVectorLayer(self.result['OUTPUT'], "filtered_sites","ogr")
+        self.delete_attributes(result_layer)
         QgsProject.instance().addMapLayer(result_layer)
         QgsMessageLog.logMessage('Limes: {0}'.format(str("Data was added successfully")), level=Qgis.Info)
 
@@ -251,7 +252,7 @@ class Limes:
             return '"' + attribute_name + '" ' + str(self.get_operator(attribute_name)) + ' ' +  str(number)
 
     def get_general_search(self, text):
-        attributes = ['Ort', 'Antiker Name', 'Klassifikation', 'Besatzung_Eingheit']
+        attributes = ['Ort', 'Antiker Name', 'Klassifikation', 'Besatzung_Einheit']
         expressions = []
         if text != '':
             for attribute in attributes:
@@ -316,7 +317,7 @@ class Limes:
     def create_expression(self):
         self.expression = ''        
         #self.expression = "{0} AND {1} AND {2} AND {3} AND {4} AND {5} AND {6} AND {7} AND {8} AND {9} AND {10} AND {11} AND {12} AND {13} AND {14} AND {15} AND {16} AND {17} AND {18} AND {19}".format(
-        self.expression = "{0} AND {1} AND {2} AND {3} AND {4} AND {5} AND {6} AND {7} AND {8} AND {9} AND {10} AND {11} AND {12} AND {13} AND {14} AND {15} AND {16}".format(
+        self.expression = "{0} AND {1} AND {2} AND {3} AND {4} AND {5} AND {6} AND {7} AND {8} AND {9} AND {10} AND {11} AND {12} AND {13} AND {14} AND {15} AND {16} AND {17}".format(
             self.get_text_expression(self.dlg.mLineEditOrt.value(), 'Ort'),
             self.get_array_expression(self.dlg.comboxBoxProvinz.checkedItems(), 'Provinz'),
             self.get_text_expression(self.dlg.mLineEditAntiker_Name.value(), 'Antiker_Name'),
@@ -367,6 +368,19 @@ class Limes:
         self.dlg.comboBoxBesatzung.addItems(self.get_unique_values('Besatzung'))
         self.dlg.comboBoxBesatzung.checkedItemsChanged.connect(lambda: self.create_expression())
         self.dlg.mLineEditBesatzung_Einheit.valueChanged.connect(lambda: self.create_expression())
+
+
+    def delete_attributes(self, layer):
+        attributes = ['Id', 'Anfang_Genauigkeit', 'Ende_Genauigkeit']
+        for attribute in attributes:
+            self.delete_attribute(layer, attribute)
+
+    def delete_attribute(self, layer, attribute_name):
+        layer.startEditing()
+        my_field = layer.fields().indexFromName(attribute_name)
+        layer.dataProvider().deleteAttributes([my_field])
+        layer.updateFields()
+        layer.commitChanges()
         
     def run(self):
         """Run method that performs all the real work"""
