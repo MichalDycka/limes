@@ -221,7 +221,7 @@ class Limes:
 
     def get_unique_values(self, attribute_name):
         unique_values = []
-        unique_values.append(None)
+        #unique_values.append(None)
         index = self.layer.fields().indexOf(attribute_name)
         for value in self.layer.uniqueValues(index):
             if value:
