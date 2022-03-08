@@ -102,6 +102,9 @@
      <height>445</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>General search</string>
+   </property>
    <property name="tabPosition">
     <enum>QTabWidget::South</enum>
    </property>
@@ -109,7 +112,7 @@
     <enum>QTabWidget::Rounded</enum>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="base">
     <attribute name="title">
@@ -221,7 +224,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>300</y>
+       <y>260</y>
        <width>381</width>
        <height>111</height>
       </rect>
@@ -240,6 +243,47 @@
      </property>
      <property name="openExternalLinks">
       <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>13</x>
+       <y>210</y>
+       <width>131</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string>General search</string>
+     </property>
+     <property name="text">
+      <string>Allgemeine Suche</string>
+     </property>
+    </widget>
+    <widget class="QgsFilterLineEdit" name="mLineGenaralSearch">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>211</y>
+       <width>231</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Place</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="qgisRelation" stdset="0">
+      <string notr="true"/>
      </property>
     </widget>
    </widget>
@@ -371,7 +415,7 @@
       <string notr="true"/>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="doubleSpinBoxAnnexInHektar">
+    <widget class="QDoubleSpinBox" name="spinBoxAnnexInHektar">
      <property name="geometry">
       <rect>
        <x>269</x>
@@ -1871,6 +1915,19 @@
      </widget>
     </widget>
    </widget>
+  </widget>
+  <widget class="Line" name="line_2">
+   <property name="geometry">
+    <rect>
+     <x>-30</x>
+     <y>176</y>
+     <width>441</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
   </widget>
  </widget>
  <customwidgets>

@@ -250,14 +250,15 @@ class Limes:
         else:
             return '"' + attribute_name + '" ' + str(self.get_operator(attribute_name)) + ' ' +  str(number)
 
-    # def add_prefix(self, input, text):
-    #     input.setPrefix(text)
-
-    # def addYearSuffix(self, number_input):
-    #     if number_input.value() > 0:
-    #         number_input.setSuffix(' A.C.')
-    #     elif number_input.value() < 0:
-    #         number_input.setSuffix(' B.C.')
+    def get_general_search(self, text):
+        attributes = ['Ort', 'Antiker Name', 'Klassifikation', 'Besatzung_Eingheit']
+        expressions = []
+        if text != '':
+            for attribute in attributes:
+                expressions.append('"' + attribute + '" ilike ' + "'%" +  str(text).lower() + "%'")
+            return " OR ".join(expressions)
+        else:
+            return ''
 
     def get_operator(self, attribute_name):
         if attribute_name == 'Anfang_Min':
@@ -308,6 +309,10 @@ class Limes:
                 result.append(condition) 
         return ' AND '.join(result)   
 
+    def create_general_search_expression(self):
+        self.expression = self.get_general_search(self.dlg.mLineGenaralSearch.value())
+        self.dlg.expressionField.setExpression(self.clean_expression())
+
     def create_expression(self):
         self.expression = ''        
         #self.expression = "{0} AND {1} AND {2} AND {3} AND {4} AND {5} AND {6} AND {7} AND {8} AND {9} AND {10} AND {11} AND {12} AND {13} AND {14} AND {15} AND {16} AND {17} AND {18} AND {19}".format(
@@ -337,6 +342,7 @@ class Limes:
     def init_inputs(self, dialog):
         self.dlg.comboxBoxProvinz.addItems(self.get_unique_values('Provinz'))
         self.dlg.comboxBoxProvinz.checkedItemsChanged.connect(lambda: self.create_expression())
+        self.dlg.mLineGenaralSearch.valueChanged.connect(lambda: self.create_general_search_expression())
         self.dlg.mLineEditOrt.valueChanged.connect(lambda: self.create_expression())
         self.dlg.mLineEditAntiker_Name.valueChanged.connect(lambda: self.create_expression())
         self.dlg.spinBoxGrosseInHektar.valueChanged.connect(lambda: self.create_expression())
