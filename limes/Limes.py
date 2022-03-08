@@ -228,13 +228,34 @@ class Limes:
                 unique_values.append(value)
         return unique_values
 
+    def get_splited_unique_values(self, attribute_name):
+        unique_values = []
+        index = self.layer.fields().indexOf(attribute_name)
+        for value in self.layer.uniqueValues(index):
+            if value:
+                if ', ' not in value:
+                    if value not in unique_values:
+                        unique_values.append(value)
+                else:
+                    for splited in value.split(', '):
+                        if splited not in unique_values:
+                            unique_values.append(splited)
+        return unique_values
+
     def get_array_expression(self, array, attribute_name):
         if len(array) > 0:
             result = '"' + attribute_name + '"' + ' in ' + str(tuple(i for i in array))
-            #QgsMessageLog.logMessage(str(result), level=Qgis.Info) 
             result = result.replace("',)", "')")
-            #QgsMessageLog.logMessage(str(result), level=Qgis.Info)
             return result
+        else:
+            return '"' + attribute_name + '" is not null'
+
+    def get_splited_array_expression(self, array, attribute_name):
+        if len(array) > 0:
+            result = []
+            for value in array:
+                result.append('"' + attribute_name + '" ilike ' + "'%" + value + "%'")
+            return " OR ".join(result)
         else:
             return '"' + attribute_name + '" is not null'
     
@@ -334,7 +355,7 @@ class Limes:
             self.get_array_expression(self.dlg.comboBoxEnde_Genauigkeit.checkedItems(), 'Ende_Genauigkeit_text'),
             self.get_number_expression(self.dlg.spinBoxEndeMin.value(), 'Ende_Min'),
             self.get_number_expression(self.dlg.spinBoxEndeMax.value(), 'Ende_Max'),
-            self.get_array_expression(self.dlg.comboBoxBesatzung.checkedItems(), 'Besatzung'),
+            self.get_splited_array_expression(self.dlg.comboBoxBesatzung.checkedItems(), 'Besatzung'),
             self.get_text_expression(self.dlg.mLineEditBesatzung_Einheit.value(), 'Besatzung_Einheit'),
         )
         #QgsMessageLog.logMessage(str(self.expression))
@@ -365,7 +386,7 @@ class Limes:
         self.dlg.comboBoxEnde_Genauigkeit.checkedItemsChanged.connect(lambda: self.create_expression())#spinBoxAnfang_Min
         self.dlg.spinBoxEndeMin.valueChanged.connect(lambda: self.create_expression())#spinBoxAnfang_Min
         self.dlg.spinBoxEndeMax.valueChanged.connect(lambda: self.create_expression())#spinBoxAnfang_Min
-        self.dlg.comboBoxBesatzung.addItems(self.get_unique_values('Besatzung'))
+        self.dlg.comboBoxBesatzung.addItems(self.get_splited_unique_values('Besatzung'))
         self.dlg.comboBoxBesatzung.checkedItemsChanged.connect(lambda: self.create_expression())
         self.dlg.mLineEditBesatzung_Einheit.valueChanged.connect(lambda: self.create_expression())
 
