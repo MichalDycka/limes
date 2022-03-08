@@ -109,7 +109,7 @@
     <enum>QTabWidget::Rounded</enum>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="base">
     <attribute name="title">
@@ -636,7 +636,7 @@
         <string>Earliest date of construction</string>
        </property>
        <property name="suffix">
-        <string> year</string>
+        <string> jahr</string>
        </property>
        <property name="prefix">
         <string/>
@@ -1524,7 +1524,7 @@
         <string>Latest date of construction</string>
        </property>
        <property name="suffix">
-        <string> year</string>
+        <string> jahr</string>
        </property>
        <property name="minimum">
         <number>-999999999</number>
@@ -1754,7 +1754,7 @@
         </rect>
        </property>
        <property name="suffix">
-        <string> year</string>
+        <string> jahr</string>
        </property>
        <property name="minimum">
         <number>-999999999</number>
@@ -1789,7 +1789,7 @@
         </rect>
        </property>
        <property name="suffix">
-        <string> year</string>
+        <string> jahr</string>
        </property>
        <property name="prefix">
         <string/>
