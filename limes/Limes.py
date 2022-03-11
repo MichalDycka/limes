@@ -204,6 +204,8 @@ class Limes:
         if self.dlg.expressionField.isValidExpression():
             self.layer.selectByExpression(self.dlg.expressionField.asExpression()) 
             self.dlg.textBrowser.setText(str(len(self.layer.selectedFeatures())) + ' sites')
+            if len(self.layer.selectedFeatures()) > 0:
+                self.dlg.button_box.buttons()[0].setEnabled(True)
 
     def save_result(self):
         QgsProject.instance().addMapLayer(self.layer)
@@ -408,6 +410,30 @@ class Limes:
         self.dlg.comboBoxBesatzung.checkedItemsChanged.connect(lambda: self.create_expression())
         self.dlg.mLineEditBesatzung_Einheit.valueChanged.connect(lambda: self.create_expression())
 
+        self.dlg.radioButtonAnfangMinLessOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnfangMinMoreOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnfangMinNotEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnfangMinEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnfangMaxLessOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnfangMaxMoreOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnfangMaxNotEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnfangMaxEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonEndeMinLessOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonEndeMinMoreOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonEndeMinNotEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonEndeMinEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonEndeMaxLessOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonEndeMaxMoreOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonEndeMaxNotEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonEndeMaxEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonGrosseLessOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonGrosseMoreOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonGrosseNotEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonGrosseEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnnexLessOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnnexMoreOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnnexNotEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnnexEqual.toggled.connect(lambda: self.create_expression())
 
     def delete_attributes(self, layer):
         attributes = ['Id', 'Anfang_Genauigkeit', 'Ende_Genauigkeit']
@@ -438,6 +464,7 @@ class Limes:
         self.dlg.expressionField.setLayer(self.layer)
         self.dlg.filterButton.clicked.connect(lambda *args: self.filter_features())
         self.dlg.button_box.accepted.connect(lambda *args: self.save_result())
+        self.dlg.button_box.buttons()[0].setEnabled(False)
         self.dlg.show()
         # Run the dialog event loop
         result = self.dlg.exec_()
