@@ -267,10 +267,10 @@ class Limes:
             return '"' + attribute_name + '" is not null' 
 
     def get_number_expression(self, number, attribute_name):
-        if number == 0 or str(number) == '0':
+        if number == 0 or number == 0.001 or str(number) == '0':
             return '"' + attribute_name + '" is not null' 
         else:
-            return '"' + attribute_name + '" ' + str(self.get_operator(attribute_name)) + ' ' +  str(number)
+            return '"' + attribute_name + '" ' + str(self.get_operator(attribute_name)) + ' ' +  str(round(number, 3))
 
     def get_general_search(self, text):
         attributes = ['Ort', 'Antiker Name', 'Klassifikation', 'Besatzung_Einheit']
@@ -319,6 +319,24 @@ class Limes:
                 return '!='
             elif self.dlg.radioButtonEndeMaxEqual.isChecked():
                 return '='
+        elif attribute_name == 'Grosse_in_Hektar':
+            if self.dlg.radioButtonGrosseLessOrEqual.isChecked():
+                return '<='
+            elif self.dlg.radioButtonGrosseMoreOrEqual.isChecked():
+                return '>='
+            elif self.dlg.radioButtonGrosseNotEqual.isChecked():
+                return '!='
+            elif self.dlg.radioButtonGrosseEqual.isChecked():
+                return '='
+        elif attribute_name == 'Annex_in_Hektar':
+            if self.dlg.radioButtonAnnexLessOrEqual.isChecked():
+                return '<='
+            elif self.dlg.radioButtonAnnexMoreOrEqual.isChecked():
+                return '>='
+            elif self.dlg.radioButtonAnnexNotEqual.isChecked():
+                return '!='
+            elif self.dlg.radioButtonAnnexEqual.isChecked():
+                return '='                
         else:
             return '='
 

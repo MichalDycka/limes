@@ -69,6 +69,9 @@
      <height>26</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>Expression input</string>
+   </property>
   </widget>
   <widget class="QPushButton" name="filterButton">
    <property name="geometry">
@@ -78,6 +81,9 @@
      <width>289</width>
      <height>26</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>Filtering sites by expression</string>
    </property>
    <property name="text">
     <string>Filter</string>
@@ -92,6 +98,9 @@
      <height>26</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>Founded filtered sites counter</string>
+   </property>
   </widget>
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
@@ -103,7 +112,7 @@
     </rect>
    </property>
    <property name="toolTip">
-    <string>General search</string>
+    <string/>
    </property>
    <property name="tabPosition">
     <enum>QTabWidget::South</enum>
@@ -112,7 +121,7 @@
     <enum>QTabWidget::Rounded</enum>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="base">
     <attribute name="title">
@@ -277,7 +286,7 @@
       </rect>
      </property>
      <property name="toolTip">
-      <string>Place</string>
+      <string>General Search</string>
      </property>
      <property name="text">
       <string/>
@@ -359,7 +368,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>170</y>
+       <y>220</y>
        <width>61</width>
        <height>26</height>
       </rect>
@@ -375,7 +384,7 @@
      <property name="geometry">
       <rect>
        <x>8</x>
-       <y>120</y>
+       <y>180</y>
        <width>111</width>
        <height>26</height>
       </rect>
@@ -391,7 +400,7 @@
      <property name="geometry">
       <rect>
        <x>100</x>
-       <y>120</y>
+       <y>180</y>
        <width>291</width>
        <height>27</height>
       </rect>
@@ -410,7 +419,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>370</y>
+       <y>380</y>
        <width>121</width>
        <height>26</height>
       </rect>
@@ -426,7 +435,7 @@
      <property name="geometry">
       <rect>
        <x>130</x>
-       <y>370</y>
+       <y>380</y>
        <width>261</width>
        <height>26</height>
       </rect>
@@ -441,68 +450,11 @@
       <string notr="true"/>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="spinBoxAnnexInHektar">
-     <property name="geometry">
-      <rect>
-       <x>269</x>
-       <y>70</y>
-       <width>121</width>
-       <height>26</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>Annexe in hectares</string>
-     </property>
-     <property name="suffix">
-      <string> ha</string>
-     </property>
-     <property name="decimals">
-      <number>3</number>
-     </property>
-     <property name="maximum">
-      <double>999999.989999999990687</double>
-     </property>
-     <property name="singleStep">
-      <double>0.100000000000000</double>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_4">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>69</y>
-       <width>91</width>
-       <height>26</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>Size in hectares</string>
-     </property>
-     <property name="text">
-      <string>Grosse</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_8">
-     <property name="geometry">
-      <rect>
-       <x>224</x>
-       <y>69</y>
-       <width>51</width>
-       <height>26</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>Annexe in hectares</string>
-     </property>
-     <property name="text">
-      <string>Annex </string>
-     </property>
-    </widget>
     <widget class="QgsFilterLineEdit" name="mLineEditKlassifikation">
      <property name="geometry">
       <rect>
        <x>100</x>
-       <y>270</y>
+       <y>300</y>
        <width>291</width>
        <height>26</height>
       </rect>
@@ -521,7 +473,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>220</y>
+       <y>260</y>
        <width>61</width>
        <height>26</height>
       </rect>
@@ -537,7 +489,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>270</y>
+       <y>300</y>
        <width>81</width>
        <height>26</height>
       </rect>
@@ -553,7 +505,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>320</y>
+       <y>340</y>
        <width>81</width>
        <height>26</height>
       </rect>
@@ -569,7 +521,7 @@
      <property name="geometry">
       <rect>
        <x>60</x>
-       <y>170</y>
+       <y>220</y>
        <width>331</width>
        <height>27</height>
       </rect>
@@ -582,7 +534,7 @@
      <property name="geometry">
       <rect>
        <x>60</x>
-       <y>220</y>
+       <y>260</y>
        <width>331</width>
        <height>27</height>
       </rect>
@@ -595,7 +547,7 @@
      <property name="geometry">
       <rect>
        <x>90</x>
-       <y>320</y>
+       <y>340</y>
        <width>301</width>
        <height>27</height>
       </rect>
@@ -604,30 +556,242 @@
       <string>Garrison (type of unit)</string>
      </property>
     </widget>
-    <widget class="QgsDoubleSpinBox" name="spinBoxGrosseInHektar">
+    <widget class="QGroupBox" name="groupBox_14">
      <property name="geometry">
       <rect>
-       <x>60</x>
-       <y>70</y>
-       <width>121</width>
-       <height>27</height>
+       <x>10</x>
+       <y>60</y>
+       <width>381</width>
+       <height>51</height>
       </rect>
      </property>
      <property name="toolTip">
       <string>Size in hectares</string>
      </property>
-     <property name="suffix">
-      <string> ha</string>
+     <property name="statusTip">
+      <string/>
      </property>
-     <property name="decimals">
-      <number>3</number>
+     <property name="title">
+      <string>Grosee</string>
      </property>
-     <property name="maximum">
-      <double>999999.989999999990687</double>
+     <widget class="QgsDoubleSpinBox" name="spinBoxGrosseInHektar">
+      <property name="geometry">
+       <rect>
+        <x>236</x>
+        <y>22</y>
+        <width>141</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Size in hectares</string>
+      </property>
+      <property name="suffix">
+       <string> ha</string>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>0.001000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>999999.989999999990687</double>
+      </property>
+      <property name="singleStep">
+       <double>0.001000000000000</double>
+      </property>
+      <property name="value">
+       <double>0.001000000000000</double>
+      </property>
+      <property name="showClearButton">
+       <bool>true</bool>
+      </property>
+      <property name="clearValue">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButtonGrosseLessOrEqual">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>25</y>
+        <width>31</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Less then or equal</string>
+      </property>
+      <property name="text">
+       <string>≤</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButtonGrosseMoreOrEqual">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>25</y>
+        <width>31</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>More then or equal</string>
+      </property>
+      <property name="text">
+       <string>≥</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButtonGrosseNotEqual">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>25</y>
+        <width>31</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Not equal</string>
+      </property>
+      <property name="text">
+       <string>!=</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButtonGrosseEqual">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>25</y>
+        <width>31</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Equal</string>
+      </property>
+      <property name="text">
+       <string>=</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_15">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
+       <width>381</width>
+       <height>51</height>
+      </rect>
      </property>
-     <property name="singleStep">
-      <double>0.100000000000000</double>
+     <property name="toolTip">
+      <string>Annexe in hectares</string>
      </property>
+     <property name="title">
+      <string>Annex</string>
+     </property>
+     <widget class="QRadioButton" name="radioButtonAnnexNotEqual">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>25</y>
+        <width>31</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Not equal</string>
+      </property>
+      <property name="text">
+       <string>!=</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButtonAnnexEqual">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>25</y>
+        <width>31</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Equal</string>
+      </property>
+      <property name="text">
+       <string>=</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButtonAnnexMoreOrEqual">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>25</y>
+        <width>31</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>More then or equal</string>
+      </property>
+      <property name="text">
+       <string>≥</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButtonAnnexLessOrEqual">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>25</y>
+        <width>31</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Less then or equal</string>
+      </property>
+      <property name="text">
+       <string>≤</string>
+      </property>
+     </widget>
+     <widget class="QgsDoubleSpinBox" name="spinBoxAnnexInHektar">
+      <property name="geometry">
+       <rect>
+        <x>236</x>
+        <y>22</y>
+        <width>141</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="suffix">
+       <string> ha</string>
+      </property>
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>0.001000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>9999999.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.001000000000000</double>
+      </property>
+      <property name="showClearButton">
+       <bool>true</bool>
+      </property>
+      <property name="clearValue">
+       <bool>false</bool>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QWidget" name="time">
