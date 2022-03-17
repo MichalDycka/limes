@@ -134,7 +134,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>40</y>
+       <y>70</y>
        <width>41</width>
        <height>26</height>
       </rect>
@@ -150,7 +150,7 @@
      <property name="geometry">
       <rect>
        <x>40</x>
-       <y>40</y>
+       <y>70</y>
        <width>351</width>
        <height>26</height>
       </rect>
@@ -169,7 +169,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>90</y>
+       <y>120</y>
        <width>111</width>
        <height>26</height>
       </rect>
@@ -185,7 +185,7 @@
      <property name="geometry">
       <rect>
        <x>65</x>
-       <y>90</y>
+       <y>120</y>
        <width>326</width>
        <height>27</height>
       </rect>
@@ -204,7 +204,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>140</y>
+       <y>170</y>
        <width>61</width>
        <height>26</height>
       </rect>
@@ -220,7 +220,7 @@
      <property name="geometry">
       <rect>
        <x>60</x>
-       <y>140</y>
+       <y>170</y>
        <width>331</width>
        <height>27</height>
       </rect>
@@ -233,7 +233,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>280</y>
+       <y>300</y>
        <width>381</width>
        <height>111</height>
       </rect>
@@ -258,10 +258,16 @@
      <property name="geometry">
       <rect>
        <x>13</x>
-       <y>210</y>
+       <y>20</y>
        <width>131</width>
        <height>26</height>
       </rect>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777214</height>
+      </size>
      </property>
      <property name="font">
       <font>
@@ -280,10 +286,16 @@
      <property name="geometry">
       <rect>
        <x>160</x>
-       <y>211</y>
+       <y>20</y>
        <width>231</width>
        <height>26</height>
       </rect>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777214</height>
+      </size>
      </property>
      <property name="toolTip">
       <string>General Search</string>
@@ -299,7 +311,7 @@
      <property name="geometry">
       <rect>
        <x>-10</x>
-       <y>180</y>
+       <y>50</y>
        <width>441</width>
        <height>20</height>
       </rect>
@@ -308,18 +320,56 @@
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <widget class="Line" name="line_3">
+    <widget class="QGroupBox" name="groupBox_16">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>250</y>
-       <width>441</width>
-       <height>20</height>
+       <x>10</x>
+       <y>220</y>
+       <width>371</width>
+       <height>61</height>
       </rect>
      </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+     <property name="title">
+      <string>Coordinates buffer search</string>
      </property>
+     <widget class="QSpinBox" name="spinBoxBufferSize">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>20</y>
+        <width>81</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Size of coordinates buffer</string>
+      </property>
+      <property name="suffix">
+       <string> m</string>
+      </property>
+      <property name="prefix">
+       <string/>
+      </property>
+      <property name="maximum">
+       <number>100000</number>
+      </property>
+     </widget>
+     <widget class="QgsFilterLineEdit" name="mLineEditCoordinates">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>261</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Coordinates input for buffer search</string>
+      </property>
+      <property name="qgisRelation" stdset="0">
+       <string notr="true"/>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QWidget" name="advanced">

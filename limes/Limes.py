@@ -40,6 +40,7 @@ from qgis.core import Qgis
 
 import sys
 import os
+import re
 
 class Limes:
     """QGIS Plugin Implementation."""
@@ -243,6 +244,17 @@ class Limes:
                         if splited not in unique_values:
                             unique_values.append(splited)
         return unique_values
+    
+    def check_coordinates(self, coordnatesString):
+        if coordnatesString and coordnatesString != '' and re.match(r"^((\-?|\+?)?\d+(\.\d+)?),\s*((\-?|\+?)?\d+(\.\d+)?)$", coordnatesString):
+            if float(coordnatesString.split(',')[0]) > -180 and float(coordnatesString.split(',')[0]) < 180 and float(coordnatesString.split(',')[1]) > -180 and float(coordnatesString.split(',')[1]) < 180:
+                return True
+            else:
+                self.iface.messageBar().pushMessage("LIMES", "Copied coordinates is not in 'EPSG:4326'.", level=Qgis.Info, duration=3)
+        else:
+            self.iface.messageBar().pushMessage("LIMES", "Copied coordinates is not in right format. Right format is for example: -3.732708,52.413018.", level=Qgis.Info, duration=3)
+            return False
+            
 
     def get_array_expression(self, array, attribute_name):
         if len(array) > 0:
@@ -273,6 +285,13 @@ class Limes:
             return '"' + attribute_name + '" is not null' 
         else:
             return '"' + attribute_name + '" ' + str(self.get_operator(attribute_name)) + ' ' +  str(round(number, 3))
+        
+    def get_coordinates(self, coordinatesString):
+        QgsMessageLog.logMessage('Limes: {0}'.format(str("number: {0}".format(self.dlg.spinBoxBufferSize.value()))), level=Qgis.Info)
+        if self.check_coordinates(coordinatesString) and self.dlg.spinBoxBufferSize.value() != 0:
+            return "intersects(buffer(transform(make_point($x, $y), 'EPSG:4326', 'EPSG:3857'), {1}),transform(make_point({0}), 'EPSG:4326', 'EPSG:3857'))".format(coordinatesString, self.dlg.spinBoxBufferSize.value())
+        else:
+            return ''
 
     def get_general_search(self, text):
         attributes = ['Ort', 'Antiker Name', 'Klassifikation', 'Besatzung_Einheit']
@@ -358,7 +377,7 @@ class Limes:
     def create_expression(self):
         self.expression = ''        
         #self.expression = "{0} AND {1} AND {2} AND {3} AND {4} AND {5} AND {6} AND {7} AND {8} AND {9} AND {10} AND {11} AND {12} AND {13} AND {14} AND {15} AND {16} AND {17} AND {18} AND {19}".format(
-        self.expression = "{0} AND {1} AND {2} AND {3} AND {4} AND {5} AND {6} AND {7} AND {8} AND {9} AND {10} AND {11} AND {12} AND {13} AND {14} AND {15} AND {16} AND {17}".format(
+        self.expression = "{0} AND {1} AND {2} AND {3} AND {4} AND {5} AND {6} AND {7} AND {8} AND {9} AND {10} AND {11} AND {12} AND {13} AND {14} AND {15} AND {16} AND {17} AND {18}".format(
             self.get_text_expression(self.dlg.mLineEditOrt.value(), 'Ort'),
             self.get_array_expression(self.dlg.comboxBoxProvinz.checkedItems(), 'Provinz'),
             self.get_text_expression(self.dlg.mLineEditAntiker_Name.value(), 'Antiker_Name'),
@@ -377,11 +396,16 @@ class Limes:
             self.get_number_expression(self.dlg.spinBoxEndeMax.value(), 'Ende_Max'),
             self.get_splited_array_expression(self.dlg.comboBoxBesatzung.checkedItems(), 'Besatzung'),
             self.get_text_expression(self.dlg.mLineEditBesatzung_Einheit.value(), 'Besatzung_Einheit'),
+            self.get_coordinates(self.dlg.mLineEditCoordinates.value())
+            
         )
         #QgsMessageLog.logMessage(str(self.expression))
         self.dlg.expressionField.setExpression(self.clean_expression())
 
     def init_inputs(self, dialog):
+        self.dlg.mLineEditCoordinates.valueChanged.connect(lambda: self.create_expression())
+        self.dlg.spinBoxBufferSize.valueChanged.connect(lambda: self.create_expression())
+        
         self.dlg.comboxBoxProvinz.addItems(self.get_unique_values('Provinz'))
         self.dlg.comboxBoxProvinz.checkedItemsChanged.connect(lambda: self.create_expression())
         self.dlg.mLineGenaralSearch.valueChanged.connect(lambda: self.create_general_search_expression())
