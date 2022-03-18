@@ -121,7 +121,7 @@
     <enum>QTabWidget::Rounded</enum>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="base">
     <attribute name="title">
@@ -622,7 +622,7 @@
       <string/>
      </property>
      <property name="title">
-      <string>Grosee</string>
+      <string>Grosse</string>
      </property>
      <widget class="QgsDoubleSpinBox" name="spinBoxGrosseInHektar">
       <property name="geometry">
