@@ -192,7 +192,7 @@ class Limes:
     def download_layer(self):
         try:
             self.downloaded_layer = processing.run("native:filedownloader", {'URL':'https://raw.githubusercontent.com/WencelFrohlich/limes/main/archeological_sites.geojson','OUTPUT':'TEMPORARY_OUTPUT'})['OUTPUT']
-            self.iface.messageBar().pushMessage("LIMES", "Layer of archeological sites was succesfully loaded in memory!", level=Qgis.Info, duration=3)
+            self.iface.messageBar().pushMessage("LIMES plugin", "The layer of archeological sites was succesfully loaded in memory!", level=Qgis.Info, duration=3)
         except:
             sys.exit()
 
@@ -220,7 +220,7 @@ class Limes:
         result_layer = QgsVectorLayer(self.result['OUTPUT'], "filtered_sites","ogr")
         self.delete_attributes(result_layer)
         QgsProject.instance().addMapLayer(result_layer)
-        QgsMessageLog.logMessage('Limes: {0}'.format(str("Data was added successfully")), level=Qgis.Info)
+        QgsMessageLog.logMessage('LIMES plugin: {0}'.format(str("Data was added successfully")), level=Qgis.Info)
 
     def get_unique_values(self, attribute_name):
         unique_values = []
@@ -250,9 +250,9 @@ class Limes:
             if float(coordnatesString.split(',')[0]) > -180 and float(coordnatesString.split(',')[0]) < 180 and float(coordnatesString.split(',')[1]) > -180 and float(coordnatesString.split(',')[1]) < 180:
                 return True
             else:
-                self.iface.messageBar().pushMessage("LIMES", "Copied coordinates is not in 'EPSG:4326'.", level=Qgis.Info, duration=3)
+                self.iface.messageBar().pushMessage("LIMES plugin", "The copied coordinates are not in CRS: 'EPSG:4326'.", level=Qgis.Info, duration=5)
         else:
-            self.iface.messageBar().pushMessage("LIMES", "Copied coordinates is not in right format. Right format is for example: -3.732708,52.413018.", level=Qgis.Info, duration=3)
+            self.iface.messageBar().pushMessage("LIMES plugin", "The copied coordinates are not in the correct format. An example of the correct form is: -3.732708,52.413018 'EPSG:4326'.", level=Qgis.Critical, duration=8)
             return False
             
 
@@ -275,7 +275,6 @@ class Limes:
     
     def get_text_expression(self, text, attribute_name):
         if text != '':
-            #return 'lower("' + attribute_name + '") = ' + "'" +  str(text).lower() + "'"
             return '"' + attribute_name + '" ilike ' + "'%" +  str(text).lower() + "%'"
         else:
             return '"' + attribute_name + '" is not null' 
@@ -287,11 +286,14 @@ class Limes:
             return '"' + attribute_name + '" ' + str(self.get_operator(attribute_name)) + ' ' +  str(round(number, 3))
         
     def get_coordinates(self, coordinatesString):
-        QgsMessageLog.logMessage('Limes: {0}'.format(str("number: {0}".format(self.dlg.spinBoxBufferSize.value()))), level=Qgis.Info)
-        if self.check_coordinates(coordinatesString) and self.dlg.spinBoxBufferSize.value() != 0:
-            return "intersects(buffer(transform(make_point($x, $y), 'EPSG:4326', 'EPSG:3857'), {1}),transform(make_point({0}), 'EPSG:4326', 'EPSG:3857'))".format(coordinatesString, self.dlg.spinBoxBufferSize.value())
+        QgsMessageLog.logMessage('LIMES plugin: {0}'.format(str("number: {0}".format(self.dlg.spinBoxBufferSize.value()))), level=Qgis.Info)
+        if self.check_coordinates(coordinatesString) and self.dlg.spinBoxBufferSize.value() * 1000 != 0:
+            return "intersects(buffer(transform(make_point($x, $y), 'EPSG:4326', 'EPSG:3857'), {1}),transform(make_point({0}), 'EPSG:4326', 'EPSG:3857'))".format(
+                coordinatesString, 
+                self.dlg.spinBoxBufferSize.value() * 1000
+            )
         else:
-            return ''
+            return '"$geometry" is not null' 
 
     def get_general_search(self, text):
         attributes = ['Ort', 'Antiker Name', 'Klassifikation', 'Besatzung_Einheit']
@@ -497,6 +499,6 @@ class Limes:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
             QgsProject.instance().removeMapLayers( [self.layer.id()] )
-            QgsMessageLog.logMessage('closing plugin: Limes', level=Qgis.Info)
+            QgsMessageLog.logMessage('Closing plugin: Limes', level=Qgis.Info)
             del self.dlg
             self.first_start = True
