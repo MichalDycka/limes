@@ -287,7 +287,7 @@ class Limes:
         
     def get_coordinates(self, coordinatesString):
         QgsMessageLog.logMessage('LIMES plugin: {0}'.format(str("number: {0}".format(self.dlg.spinBoxBufferSize.value()))), level=Qgis.Info)
-        if self.check_coordinates(coordinatesString) and self.dlg.spinBoxBufferSize.value() * 1000 != 0:
+        if coordinatesString and self.check_coordinates(coordinatesString) and self.dlg.spinBoxBufferSize.value() * 1000 != 0:
             return "intersects(buffer(transform(make_point($x, $y), 'EPSG:4326', 'EPSG:3857'), {1}),transform(make_point({0}), 'EPSG:4326', 'EPSG:3857'))".format(
                 coordinatesString, 
                 self.dlg.spinBoxBufferSize.value() * 1000
