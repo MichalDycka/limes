@@ -4,10 +4,10 @@
 
 [general]
 name=LIMES
-qgisMinimumVersion=3.16
+qgisMinimumVersion=3.22
 description=This plugin download and show Roman military installations alongside the frontiers of the Roman Empire (Limes)
-version=0.3
-author=Václav FRÖHLICH / ENVIPARTNER, s.r.o. / Michal Dyčka
+version=0.4
+author=ENVIPARTNER, s.r.o. / Václav FRÖHLICH /  Michal Dyčka / Petr Vybral
 email=frohlich@envipartner.cz
 
 about=Open access database of Roman military installations alongside the frontiers of the Roman Empire (Limes). Included are forts and camps as well as smaller installations like watchtowers and fortlets. Where possible, dating and spatial reference are included together with basic classification and information about garrison.
