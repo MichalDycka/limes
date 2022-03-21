@@ -279,18 +279,18 @@ class Limes:
         else:
             return '"' + attribute_name + '" is not null' 
 
-    def get_number_expression(self, number, attribute_name):
-        if number == 0 or number == 0.001 or str(number) == '0':
+    def get_number_expression(self, number, attribute_name, zero=0):
+        if number == zero or str(number) == str(zero):
             return '"' + attribute_name + '" is not null' 
         else:
             return '"' + attribute_name + '" ' + str(self.get_operator(attribute_name)) + ' ' +  str(round(number, 3))
         
     def get_coordinates(self, coordinatesString):
-        QgsMessageLog.logMessage('LIMES plugin: {0}'.format(str("number: {0}".format(self.dlg.spinBoxBufferSize.value()))), level=Qgis.Info)
-        if coordinatesString and coordinatesString != '' and self.check_coordinates(coordinatesString) and self.dlg.spinBoxBufferSize.value() * 1000 != 0:
+        #QgsMessageLog.logMessage('LIMES plugin: {0}'.format(str("number: {0}".format(self.dlg.doubleSpinBoxBufferSize.value()))), level=Qgis.Info)
+        if coordinatesString and coordinatesString != '' and self.check_coordinates(coordinatesString) and self.dlg.doubleSpinBoxBufferSize.value() * 1000 != 0:
             return "intersects(buffer(transform(make_point($x, $y), 'EPSG:4326', 'EPSG:3857'), {1}),transform(make_point({0}), 'EPSG:4326', 'EPSG:3857'))".format(
                 coordinatesString, 
-                self.dlg.spinBoxBufferSize.value() * 1000
+                self.dlg.doubleSpinBoxBufferSize.value() * 1000
             )
         else:
             return '"$geometry" is not null' 
@@ -362,7 +362,6 @@ class Limes:
                 return '='                
         else:
             return '='
-
     
     def clean_expression(self):
         result = []
@@ -378,24 +377,23 @@ class Limes:
 
     def create_expression(self):
         self.expression = ''        
-        #self.expression = "{0} AND {1} AND {2} AND {3} AND {4} AND {5} AND {6} AND {7} AND {8} AND {9} AND {10} AND {11} AND {12} AND {13} AND {14} AND {15} AND {16} AND {17} AND {18} AND {19}".format(
         self.expression = "{0} AND {1} AND {2} AND {3} AND {4} AND {5} AND {6} AND {7} AND {8} AND {9} AND {10} AND {11} AND {12} AND {13} AND {14} AND {15} AND {16} AND {17} AND {18}".format(
             self.get_text_expression(self.dlg.mLineEditOrt.value(), 'Ort'),
             self.get_array_expression(self.dlg.comboxBoxProvinz.checkedItems(), 'Provinz'),
             self.get_text_expression(self.dlg.mLineEditAntiker_Name.value(), 'Antiker_Name'),
-            self.get_number_expression(self.dlg.spinBoxGrosseInHektar.value(), 'Grosse_in_Hektar'),
+            self.get_number_expression(self.dlg.spinBoxGrosseInHektar.value(), 'Grosse_in_Hektar', zero=0.000),
             self.get_array_expression(self.dlg.comboxBoxUmwehrung.checkedItems(), 'Umwehrung'),
             self.get_array_expression(self.dlg.comboBoxAnnex.checkedItems(), 'Annex'),
-            self.get_number_expression(self.dlg.spinBoxAnnexInHektar.value(), 'Annex_in_Hektar'),
+            self.get_number_expression(self.dlg.spinBoxAnnexInHektar.value(), 'Annex_in_Hektar', zero=0.000),
             self.get_array_expression(self.dlg.comboBoxLimes.checkedItems(), 'Limes'),
             self.get_text_expression(self.dlg.mLineEditKlassifikation.value(), 'Klassifikation'),
             self.get_array_expression(self.dlg.comboBoxObjekt.checkedItems(), 'Objekt'),
             self.get_array_expression(self.dlg.comboBoxAnfang_Genauigkeit.checkedItems(), 'Anfang_Genauigkeit_text'),
-            self.get_number_expression(self.dlg.spinBoxAnfang_Min.value(), 'Anfang_Min'),
-            self.get_number_expression(self.dlg.spinBoxAnfang_Max.value(), 'Anfang_Max'),
+            self.get_number_expression(self.dlg.spinBoxAnfang_Min.value(), 'Anfang_Min', zero=-500),
+            self.get_number_expression(self.dlg.spinBoxAnfang_Max.value(), 'Anfang_Max', zero=-500),
             self.get_array_expression(self.dlg.comboBoxEnde_Genauigkeit.checkedItems(), 'Ende_Genauigkeit_text'),
-            self.get_number_expression(self.dlg.spinBoxEndeMin.value(), 'Ende_Min'),
-            self.get_number_expression(self.dlg.spinBoxEndeMax.value(), 'Ende_Max'),
+            self.get_number_expression(self.dlg.spinBoxEndeMin.value(), 'Ende_Min', zero=-500),
+            self.get_number_expression(self.dlg.spinBoxEndeMax.value(), 'Ende_Max', zero=-500),
             self.get_splited_array_expression(self.dlg.comboBoxBesatzung.checkedItems(), 'Besatzung'),
             self.get_text_expression(self.dlg.mLineEditBesatzung_Einheit.value(), 'Besatzung_Einheit'),
             self.get_coordinates(self.dlg.mLineEditCoordinates.value())
@@ -406,7 +404,7 @@ class Limes:
 
     def init_inputs(self, dialog):
         self.dlg.mLineEditCoordinates.valueChanged.connect(lambda: self.create_expression())
-        self.dlg.spinBoxBufferSize.valueChanged.connect(lambda: self.create_expression())
+        self.dlg.doubleSpinBoxBufferSize.valueChanged.connect(lambda: self.create_expression())
         
         self.dlg.comboxBoxProvinz.addItems(self.get_unique_values('Provinz'))
         self.dlg.comboxBoxProvinz.checkedItemsChanged.connect(lambda: self.create_expression())
