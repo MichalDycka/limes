@@ -330,7 +330,7 @@
       </rect>
      </property>
      <property name="title">
-      <string>Coordinates buffer search</string>
+      <string>Pufferzonensuche</string>
      </property>
      <widget class="QDoubleSpinBox" name="doubleSpinBoxBufferSize">
       <property name="geometry">
@@ -343,6 +343,12 @@
       </property>
       <property name="toolTip">
        <string>Size of coordinates buffer in kilometeres</string>
+      </property>
+      <property name="suffix">
+       <string> km</string>
+      </property>
+      <property name="maximum">
+       <double>150.000000000000000</double>
       </property>
      </widget>
      <widget class="QgsFilterLineEdit" name="mLineEditCoordinates">
