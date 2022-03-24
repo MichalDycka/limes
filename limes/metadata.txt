@@ -6,7 +6,7 @@
 name=LIMES
 qgisMinimumVersion=3.22
 description=This plugin download and show Roman military installations alongside the frontiers of the Roman Empire (Limes)
-version=0.4
+version=0.5
 author=ENVIPARTNER, s.r.o. / Václav FRÖHLICH /  Michal Dyčka / Petr Vybral
 email=frohlich@envipartner.cz
 
