@@ -268,7 +268,7 @@ class Limes:
         if len(array) > 0:
             result = []
             for value in array:
-                result.append('"' + attribute_name + '" ilike ' + "'%" + value + "%'")
+                result.append('("' + attribute_name + '" ilike ' + "'%" + value + "%')")
             return " OR ".join(result)
         else:
             return '"' + attribute_name + '" is not null'
