@@ -296,7 +296,7 @@ class Limes:
             return '"$geometry" is not null' 
 
     def get_general_search(self, text):
-        attributes = ['Ort', 'Antiker Name', 'Klassifikation', 'Besatzung_Einheit']
+        attributes = ['Ort', 'Antiker_Name', 'Klassifikation', 'Besatzung_Einheit']
         expressions = []
         if text != '':
             for attribute in attributes:
