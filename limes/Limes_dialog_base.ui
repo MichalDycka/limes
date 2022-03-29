@@ -348,7 +348,7 @@
        <string> km</string>
       </property>
       <property name="maximum">
-       <double>150.000000000000000</double>
+       <double>9999.000000000000000</double>
       </property>
      </widget>
      <widget class="QgsFilterLineEdit" name="mLineEditCoordinates">
