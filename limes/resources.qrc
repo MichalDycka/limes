@@ -1,5 +1,6 @@
 <RCC>
-    <qresource prefix="/plugins/Limes" >
-        <file>icon.png</file>
-    </qresource>
+  <qresource prefix="/plugins/Limes">
+    <file>icon.png</file>
+    <file>logo-large.png</file>
+  </qresource>
 </RCC>

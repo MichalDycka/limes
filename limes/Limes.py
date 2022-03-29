@@ -40,6 +40,7 @@ from qgis.core import Qgis
 
 import sys
 import os
+import re
 
 class Limes:
     """QGIS Plugin Implementation."""
@@ -190,8 +191,8 @@ class Limes:
 
     def download_layer(self):
         try:
-            self.downloaded_layer = processing.run("native:filedownloader", {'URL':'http://89.185.227.230/scripts/archeological_sites.geojson','OUTPUT':'TEMPORARY_OUTPUT'})['OUTPUT']
-            self.iface.messageBar().pushMessage("LIMES", "Layer of archeological sites was succesfully loaded in memory!", level=Qgis.Info, duration=3)
+            self.downloaded_layer = processing.run("native:filedownloader", {'URL':'https://raw.githubusercontent.com/WencelFrohlich/limes/main/archeological_sites.geojson','OUTPUT':'TEMPORARY_OUTPUT'})['OUTPUT']
+            self.iface.messageBar().pushMessage("LIMES plugin", "The layer of archeological sites was succesfully loaded in memory!", level=Qgis.Info, duration=3)
         except:
             sys.exit()
 
@@ -200,10 +201,12 @@ class Limes:
         #QgsProject.instance().addMapLayer(self.layer)
 
     def filter_features(self):
-        QgsMessageLog.logMessage(str(self.dlg.expressionField.isValidExpression()))
+        #QgsMessageLog.logMessage(str(self.dlg.expressionField.isValidExpression()))
         if self.dlg.expressionField.isValidExpression():
             self.layer.selectByExpression(self.dlg.expressionField.asExpression()) 
-            self.dlg.textBrowser.setText(str(len(self.layer.selectedFeatures())))
+            self.dlg.textBrowser.setText(str(len(self.layer.selectedFeatures())) + ' sites')
+            if len(self.layer.selectedFeatures()) > 0:
+                self.dlg.button_box.buttons()[0].setEnabled(True)
 
     def save_result(self):
         QgsProject.instance().addMapLayer(self.layer)
@@ -214,100 +217,260 @@ class Limes:
         'DATASOURCE_OPTIONS':'',
         'LAYER_OPTIONS':''}
         )
-        result_layer = QgsVectorLayer(self.result['OUTPUT'], "vysledek vyberu","ogr")
+        result_layer = QgsVectorLayer(self.result['OUTPUT'], "filtered_sites","ogr")
+        self.delete_attributes(result_layer)
         QgsProject.instance().addMapLayer(result_layer)
-        QgsMessageLog.logMessage('Limes: {0}'.format(str("Data was added successfully")), level=Qgis.Info)
+        QgsMessageLog.logMessage('LIMES plugin: {0}'.format(str("Data was added successfully")), level=Qgis.Info)
 
     def get_unique_values(self, attribute_name):
         unique_values = []
-        unique_values.append(None)
+        #unique_values.append(None)
         index = self.layer.fields().indexOf(attribute_name)
         for value in self.layer.uniqueValues(index):
-            unique_values.append(value)
+            if value:
+                unique_values.append(value)
         return unique_values
+
+    def get_splited_unique_values(self, attribute_name):
+        unique_values = []
+        index = self.layer.fields().indexOf(attribute_name)
+        for value in self.layer.uniqueValues(index):
+            if value:
+                if ', ' not in value:
+                    if value not in unique_values:
+                        unique_values.append(value)
+                else:
+                    for splited in value.split(', '):
+                        if splited not in unique_values:
+                            unique_values.append(splited)
+        return unique_values
+    
+    def check_coordinates(self, coordnatesString):
+        if coordnatesString and coordnatesString != '' and re.match(r"^((\-?|\+?)?\d+(\.\d+)?),\s*((\-?|\+?)?\d+(\.\d+)?)$", coordnatesString):
+            if float(coordnatesString.split(',')[0]) > -180 and float(coordnatesString.split(',')[0]) < 180 and float(coordnatesString.split(',')[1]) > -180 and float(coordnatesString.split(',')[1]) < 180:
+                return True
+            else:
+                self.iface.messageBar().pushMessage("LIMES plugin", "The copied coordinates are not in CRS: 'EPSG:4326'.", level=Qgis.Info, duration=5)
+        else:
+            self.iface.messageBar().pushMessage("LIMES plugin", "The copied coordinates are not in the correct format. An example of the correct form is: -3.732708,52.413018 'EPSG:4326'.", level=Qgis.Critical, duration=8)
+            return False
+            
 
     def get_array_expression(self, array, attribute_name):
         if len(array) > 0:
-            return '"' + attribute_name + '"' + ' in ' + str(tuple(i for i in array))
+            result = '"' + attribute_name + '"' + ' in ' + str(tuple(i for i in array))
+            result = result.replace("',)", "')")
+            return result
+        else:
+            return '"' + attribute_name + '" is not null'
+
+    def get_splited_array_expression(self, array, attribute_name):
+        if len(array) > 0:
+            result = []
+            for value in array:
+                result.append('"' + attribute_name + '" ilike ' + "'%" + value + "%'")
+            return  "(" + " OR ".join(result) + ")"
         else:
             return '"' + attribute_name + '" is not null'
     
     def get_text_expression(self, text, attribute_name):
         if text != '':
-            return '"' + attribute_name + '" = ' + "'" +  str(text) + "'"
+            return '"' + attribute_name + '" ilike ' + "'%" +  str(text).lower() + "%'"
         else:
             return '"' + attribute_name + '" is not null' 
 
-    def get_number_expression(self, number, attribute_name):
-        if number == 0 or str(number) == '0':
+    def get_number_expression(self, number, attribute_name, zero=0):
+        if number == zero or str(number) == str(zero):
             return '"' + attribute_name + '" is not null' 
         else:
-            return '"' + attribute_name + '" = ' +  str(number)
+            return '"' + attribute_name + '" ' + str(self.get_operator(attribute_name)) + ' ' +  str(round(number, 3))
+        
+    def get_coordinates(self, coordinatesString):
+        #QgsMessageLog.logMessage('LIMES plugin: {0}'.format(str("number: {0}".format(self.dlg.doubleSpinBoxBufferSize.value()))), level=Qgis.Info)
+        if coordinatesString and coordinatesString != '' and self.check_coordinates(coordinatesString) and self.dlg.doubleSpinBoxBufferSize.value() * 1000 != 0:
+            return "intersects(buffer(transform(make_point($x, $y), 'EPSG:4326', 'EPSG:3857'), {1}),transform(make_point({0}), 'EPSG:4326', 'EPSG:3857'))".format(
+                coordinatesString, 
+                self.dlg.doubleSpinBoxBufferSize.value() * 1000
+            )
+        else:
+            return '"$geometry" is not null' 
+
+    def get_general_search(self, text):
+        attributes = ['Ort', 'Antiker_Name', 'Klassifikation', 'Besatzung_Einheit']
+        expressions = []
+        if text != '':
+            for attribute in attributes:
+                expressions.append('"' + attribute + '" ilike ' + "'%" +  str(text).lower() + "%'")
+            return " OR ".join(expressions)
+        else:
+            return ''
+
+    def get_operator(self, attribute_name):
+        if attribute_name == 'Anfang_Min':
+            if self.dlg.radioButtonAnfangMinLessOrEqual.isChecked():
+                return '<='
+            elif self.dlg.radioButtonAnfangMinMoreOrEqual.isChecked():
+                return '>='
+            elif self.dlg.radioButtonAnfangMinNotEqual.isChecked():
+                return '!='
+            elif self.dlg.radioButtonAnfangMinEqual.isChecked():
+                return '='
+        elif attribute_name == 'Anfang_Max':
+            if self.dlg.radioButtonAnfangMaxLessOrEqual.isChecked():
+                return '<='
+            elif self.dlg.radioButtonAnfangMaxMoreOrEqual.isChecked():
+                return '>='
+            elif self.dlg.radioButtonAnfangMaxNotEqual.isChecked():
+                return '!='
+            elif self.dlg.radioButtonAnfangMaxEqual.isChecked():
+                return '='
+        elif attribute_name == 'Ende_Min':
+            if self.dlg.radioButtonEndeMinLessOrEqual.isChecked():
+                return '<='
+            elif self.dlg.radioButtonEndeMinMoreOrEqual.isChecked():
+                return '>='
+            elif self.dlg.radioButtonEndeMinNotEqual.isChecked():
+                return '!='
+            elif self.dlg.radioButtonEndeMinEqual.isChecked():
+                return '='
+        elif attribute_name == 'Ende_Max':
+            if self.dlg.radioButtonEndeMaxLessOrEqual.isChecked():
+                return '<='
+            elif self.dlg.radioButtonEndeMaxMoreOrEqual.isChecked():
+                return '>='
+            elif self.dlg.radioButtonEndeMaxNotEqual.isChecked():
+                return '!='
+            elif self.dlg.radioButtonEndeMaxEqual.isChecked():
+                return '='
+        elif attribute_name == 'Grosse_in_Hektar':
+            if self.dlg.radioButtonGrosseLessOrEqual.isChecked():
+                return '<='
+            elif self.dlg.radioButtonGrosseMoreOrEqual.isChecked():
+                return '>='
+            elif self.dlg.radioButtonGrosseNotEqual.isChecked():
+                return '!='
+            elif self.dlg.radioButtonGrosseEqual.isChecked():
+                return '='
+        elif attribute_name == 'Annex_in_Hektar':
+            if self.dlg.radioButtonAnnexLessOrEqual.isChecked():
+                return '<='
+            elif self.dlg.radioButtonAnnexMoreOrEqual.isChecked():
+                return '>='
+            elif self.dlg.radioButtonAnnexNotEqual.isChecked():
+                return '!='
+            elif self.dlg.radioButtonAnnexEqual.isChecked():
+                return '='                
+        else:
+            return '='
     
     def clean_expression(self):
         result = []
         conditions = str(self.expression).split('AND')
-        #QgsMessageLog.logMessage(str(conditions), level=Qgis.Info) 
         for condition in conditions:
             if 'is not null' not in condition:
                 result.append(condition) 
         return ' AND '.join(result)   
 
+    def create_general_search_expression(self):
+        self.expression = self.get_general_search(self.dlg.mLineGenaralSearch.value())
+        self.dlg.expressionField.setExpression(self.clean_expression())
+
     def create_expression(self):
         self.expression = ''        
-        self.expression = "{0} AND {1} AND {2} AND {3} AND {4} AND {5} AND {6} AND {7} AND {8} AND {9} AND {10} AND {11} AND {12} AND {13} AND {14} AND {15} AND {16} AND {17} AND {18} AND {19}".format(
+        self.expression = "{0} AND {1} AND {2} AND {3} AND {4} AND {5} AND {6} AND {7} AND {8} AND {9} AND {10} AND {11} AND {12} AND {13} AND {14} AND {15} AND {16} AND {17} AND {18}".format(
             self.get_text_expression(self.dlg.mLineEditOrt.value(), 'Ort'),
             self.get_array_expression(self.dlg.comboxBoxProvinz.checkedItems(), 'Provinz'),
             self.get_text_expression(self.dlg.mLineEditAntiker_Name.value(), 'Antiker_Name'),
-            self.get_number_expression(self.dlg.spinBoxGrosseInHektar.value(), 'Grosse_in_Hektar'),
-            self.get_number_expression(self.dlg.spinBoxGrosseInMeter.value(), 'Grosse_in_m2'),
+            self.get_number_expression(self.dlg.spinBoxGrosseInHektar.value(), 'Grosse_in_Hektar', zero=0.000),
             self.get_array_expression(self.dlg.comboxBoxUmwehrung.checkedItems(), 'Umwehrung'),
-            self.get_text_expression(self.dlg.comboBoxAnnex.currentText(), 'Annex'),
-            self.get_number_expression(self.dlg.spinBoxAnnexInHektar.value(), 'Annex_in_Hektar'),
-            self.get_number_expression(self.dlg.spinBoxAnnexInM2.value(), 'Annex_in_m2_'),
-            self.get_text_expression(self.dlg.comboBoxLimes.currentText(), 'Limes'),
+            self.get_array_expression(self.dlg.comboBoxAnnex.checkedItems(), 'Annex'),
+            self.get_number_expression(self.dlg.spinBoxAnnexInHektar.value(), 'Annex_in_Hektar', zero=0.000),
+            self.get_array_expression(self.dlg.comboBoxLimes.checkedItems(), 'Limes'),
             self.get_text_expression(self.dlg.mLineEditKlassifikation.value(), 'Klassifikation'),
-            self.get_text_expression(self.dlg.comboBoxObjekt.currentText(), 'Objekt'),
-            self.get_number_expression(self.dlg.spinBoxAnfang_Genauigkeit.value(), 'Anfang_Genauigkeit'),
-            self.get_number_expression(self.dlg.spinBoxAnfang_Min.value(), 'Anfang_Min'),
-            self.get_number_expression(self.dlg.spinBoxAnfang_Max.value(), 'Anfang_Max'),
-            self.get_number_expression(self.dlg.spinBoxEnde_Genauigkeit.value(), 'Ende_Genauigkeit'),
-            self.get_number_expression(self.dlg.spinBoxEndeMin.value(), 'Ende_Min'),
-            self.get_number_expression(self.dlg.spinBoxEndeMax.value(), 'Ende_Max'),
-            self.get_text_expression(self.dlg.mLineEditBesatzung.value(), 'Besatzung'),
+            self.get_array_expression(self.dlg.comboBoxObjekt.checkedItems(), 'Objekt'),
+            self.get_array_expression(self.dlg.comboBoxAnfang_Genauigkeit.checkedItems(), 'Anfang_Genauigkeit_text'),
+            self.get_number_expression(self.dlg.spinBoxAnfang_Min.value(), 'Anfang_Min', zero=-500),
+            self.get_number_expression(self.dlg.spinBoxAnfang_Max.value(), 'Anfang_Max', zero=-500),
+            self.get_array_expression(self.dlg.comboBoxEnde_Genauigkeit.checkedItems(), 'Ende_Genauigkeit_text'),
+            self.get_number_expression(self.dlg.spinBoxEndeMin.value(), 'Ende_Min', zero=-500),
+            self.get_number_expression(self.dlg.spinBoxEndeMax.value(), 'Ende_Max', zero=-500),
+            self.get_splited_array_expression(self.dlg.comboBoxBesatzung.checkedItems(), 'Besatzung'),
             self.get_text_expression(self.dlg.mLineEditBesatzung_Einheit.value(), 'Besatzung_Einheit'),
+            self.get_coordinates(self.dlg.mLineEditCoordinates.value())
+            
         )
         #QgsMessageLog.logMessage(str(self.expression))
         self.dlg.expressionField.setExpression(self.clean_expression())
 
-
     def init_inputs(self, dialog):
+        self.dlg.mLineEditCoordinates.valueChanged.connect(lambda: self.create_expression())
+        self.dlg.doubleSpinBoxBufferSize.valueChanged.connect(lambda: self.create_expression())
+        
         self.dlg.comboxBoxProvinz.addItems(self.get_unique_values('Provinz'))
         self.dlg.comboxBoxProvinz.checkedItemsChanged.connect(lambda: self.create_expression())
+        self.dlg.mLineGenaralSearch.valueChanged.connect(lambda: self.create_general_search_expression())
         self.dlg.mLineEditOrt.valueChanged.connect(lambda: self.create_expression())
         self.dlg.mLineEditAntiker_Name.valueChanged.connect(lambda: self.create_expression())
         self.dlg.spinBoxGrosseInHektar.valueChanged.connect(lambda: self.create_expression())
-        self.dlg.spinBoxGrosseInMeter.valueChanged.connect(lambda: self.create_expression())
         self.dlg.comboxBoxUmwehrung.addItems(self.get_unique_values('Umwehrung'))
         self.dlg.comboxBoxUmwehrung.checkedItemsChanged.connect(lambda: self.create_expression())
         self.dlg.comboBoxAnnex.addItems(self.get_unique_values('Annex'))
-        self.dlg.comboBoxAnnex.currentIndexChanged.connect(lambda: self.create_expression())
+        self.dlg.comboBoxAnnex.checkedItemsChanged.connect(lambda: self.create_expression())
         self.dlg.spinBoxAnnexInHektar.valueChanged.connect(lambda: self.create_expression())
-        self.dlg.spinBoxAnnexInM2.valueChanged.connect(lambda: self.create_expression())
         self.dlg.comboBoxLimes.addItems(self.get_unique_values('Limes'))
-        self.dlg.comboBoxLimes.currentIndexChanged.connect(lambda: self.create_expression())
+        self.dlg.comboBoxLimes.checkedItemsChanged.connect(lambda: self.create_expression())
         self.dlg.mLineEditKlassifikation.valueChanged.connect(lambda: self.create_expression())
         self.dlg.comboBoxObjekt.addItems(self.get_unique_values('Objekt'))
-        self.dlg.comboBoxObjekt.currentIndexChanged.connect(lambda: self.create_expression())
-        self.dlg.spinBoxAnfang_Genauigkeit.valueChanged.connect(lambda: self.create_expression())#spinBoxAnfang_Min
-        self.dlg.spinBoxAnfang_Min.valueChanged.connect(lambda: self.create_expression())#spinBoxAnfang_Min
-        self.dlg.spinBoxAnfang_Max.valueChanged.connect(lambda: self.create_expression())#spinBoxAnfang_Min
-        self.dlg.spinBoxEnde_Genauigkeit.valueChanged.connect(lambda: self.create_expression())#spinBoxAnfang_Min
+        self.dlg.comboBoxObjekt.checkedItemsChanged.connect(lambda: self.create_expression())
+        self.dlg.comboBoxAnfang_Genauigkeit.addItems(self.get_unique_values('Anfang_Genauigkeit_text'))
+        self.dlg.comboBoxAnfang_Genauigkeit.checkedItemsChanged.connect(lambda: self.create_expression())
+        self.dlg.spinBoxAnfang_Min.valueChanged.connect(lambda: self.create_expression())
+        self.dlg.spinBoxAnfang_Max.valueChanged.connect(lambda: self.create_expression())
+        self.dlg.comboBoxEnde_Genauigkeit.addItems(self.get_unique_values('Ende_Genauigkeit_text'))
+        self.dlg.comboBoxEnde_Genauigkeit.checkedItemsChanged.connect(lambda: self.create_expression())#spinBoxAnfang_Min
         self.dlg.spinBoxEndeMin.valueChanged.connect(lambda: self.create_expression())#spinBoxAnfang_Min
         self.dlg.spinBoxEndeMax.valueChanged.connect(lambda: self.create_expression())#spinBoxAnfang_Min
-        self.dlg.mLineEditBesatzung.valueChanged.connect(lambda: self.create_expression())
+        self.dlg.comboBoxBesatzung.addItems(self.get_splited_unique_values('Besatzung'))
+        self.dlg.comboBoxBesatzung.checkedItemsChanged.connect(lambda: self.create_expression())
         self.dlg.mLineEditBesatzung_Einheit.valueChanged.connect(lambda: self.create_expression())
 
+        self.dlg.radioButtonAnfangMinLessOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnfangMinMoreOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnfangMinNotEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnfangMinEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnfangMaxLessOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnfangMaxMoreOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnfangMaxNotEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnfangMaxEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonEndeMinLessOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonEndeMinMoreOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonEndeMinNotEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonEndeMinEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonEndeMaxLessOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonEndeMaxMoreOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonEndeMaxNotEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonEndeMaxEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonGrosseLessOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonGrosseMoreOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonGrosseNotEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonGrosseEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnnexLessOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnnexMoreOrEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnnexNotEqual.toggled.connect(lambda: self.create_expression())
+        self.dlg.radioButtonAnnexEqual.toggled.connect(lambda: self.create_expression())
+
+    def delete_attributes(self, layer):
+        attributes = ['Id', 'Anfang_Genauigkeit', 'Ende_Genauigkeit']
+        for attribute in attributes:
+            self.delete_attribute(layer, attribute)
+
+    def delete_attribute(self, layer, attribute_name):
+        layer.startEditing()
+        my_field = layer.fields().indexFromName(attribute_name)
+        layer.dataProvider().deleteAttributes([my_field])
+        layer.updateFields()
+        layer.commitChanges()
+        
     def run(self):
         """Run method that performs all the real work"""
 
@@ -325,6 +488,7 @@ class Limes:
         self.dlg.expressionField.setLayer(self.layer)
         self.dlg.filterButton.clicked.connect(lambda *args: self.filter_features())
         self.dlg.button_box.accepted.connect(lambda *args: self.save_result())
+        self.dlg.button_box.buttons()[0].setEnabled(False)
         self.dlg.show()
         # Run the dialog event loop
         result = self.dlg.exec_()
@@ -333,6 +497,6 @@ class Limes:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
             QgsProject.instance().removeMapLayers( [self.layer.id()] )
-            QgsMessageLog.logMessage('closing plugin: Limes', level=Qgis.Info)
+            QgsMessageLog.logMessage('Closing plugin: Limes', level=Qgis.Info)
             del self.dlg
             self.first_start = True
