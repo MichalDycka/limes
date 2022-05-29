@@ -1,2 +1,2 @@
 # LIMES
-QGIS plugin for filtering and download Ancient Rome military sites
+SpatialLITE database of Roman military sites in form of a downloadable QGIS plugin. Created by DAI RGK.
